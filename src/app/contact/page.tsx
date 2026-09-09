@@ -9,7 +9,7 @@ import { COMPANY_DATA } from "@/data/company";
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Get in touch with YASNARGLOBAL PRIVATE LIMITED. Phone: +91 9931957903, Email: admin@yasnarglobal.com. Office in Hazaribagh, Jharkhand, India.",
+    "Get in touch with YASNARGLOBAL PRIVATE LIMITED. Phone: +91 9608626035, Email: admin@yasnarglobal.com. Office in Hazaribagh, Jharkhand, India.",
 };
 
 export default function ContactPage() {

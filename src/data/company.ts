@@ -46,8 +46,8 @@ export const COMPANY_DATA: CompanyConfig = {
   domain: "yasnarglobal.com",
   url: "https://yasnarglobal.com",
   email: "admin@yasnarglobal.com",
-  phone: "+919931957903",
-  phoneDisplay: "+91 9931957903",
+  phone: "+919608626035",
+  phoneDisplay: "+91 9608626035",
   address: {
     line1: "01, Romi, Azad Nagar",
     city: "Hazaribagh",
