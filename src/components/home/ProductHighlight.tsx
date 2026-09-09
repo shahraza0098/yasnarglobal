@@ -63,7 +63,7 @@ export function ProductHighlight() {
 
             {/* Neutral Smartphone Device Frame with Clean Placeholder */}
             <div className="relative z-10 py-6">
-              <DeviceMockup />
+              <DeviceMockup screenshotUrl="/images/gyan-master-screenshot.png" />
             </div>
           </div>
         </div>

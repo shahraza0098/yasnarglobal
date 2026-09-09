@@ -107,7 +107,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
       "Gyan Master is an educational application designed to help learners access useful learning resources through an accessible digital experience.",
     status: "available",
     // Note: Official Play Store URL and app screenshots to be configured upon official release.
-    playStoreUrl: undefined,
+    playStoreUrl: "https://play.google.com/store/apps/details?id=com.nextlearn.gyanmaster",
     placeholderNote:
       "Neutral device presentation. Official application screenshots and Play Store link will be updated upon client distribution.",
   },

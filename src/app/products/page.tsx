@@ -94,7 +94,7 @@ export default function ProductsPage() {
                     className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#165dfc] rounded-2xl -z-10 hidden sm:block"
                     aria-hidden="true"
                   />
-                  <DeviceMockup />
+                  <DeviceMockup screenshotUrl="/images/gyan-master-screenshot.png" />
                 </div>
               </div>
             </div>

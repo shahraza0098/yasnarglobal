@@ -18,6 +18,8 @@ interface FormErrors {
   message?: string;
 }
 
+type SubmitStatus = "idle" | "submitting" | "success" | "error" | "not_configured";
+
 export function ContactForm() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -28,8 +30,8 @@ export function ContactForm() {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [preparedForEmail, setPreparedForEmail] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
+  const [apiMessage, setApiMessage] = useState("");
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -70,17 +72,50 @@ export function ContactForm() {
     e.preventDefault();
     if (!validate()) return;
 
-    setIsSubmitting(true);
+    setSubmitStatus("submitting");
+    setApiMessage("");
 
-    // Simulate API call check
     try {
-      // In accordance with guidelines: transparently inform that direct web dispatch is in setup,
-      // and provide immediate pre-filled mailto dispatch to the official company email.
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      setPreparedForEmail(true);
-    } finally {
-      setIsSubmitting(false);
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setSubmitStatus("error");
+        setApiMessage(data.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      // Handle unconfigured state (503 with configured: false)
+      if (data.configured === false) {
+        setSubmitStatus("not_configured");
+        setApiMessage(data.message);
+        return;
+      }
+
+      setSubmitStatus("success");
+      setApiMessage(data.message || "Your message has been sent successfully.");
+    } catch {
+      setSubmitStatus("error");
+      setApiMessage("Network error. Please check your connection and try again.");
     }
+  };
+
+  const resetForm = () => {
+    setSubmitStatus("idle");
+    setApiMessage("");
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      subject: "General Inquiry",
+      message: "",
+    });
+    setErrors({});
   };
 
   const handleOpenMailClient = () => {
@@ -97,29 +132,98 @@ export function ContactForm() {
         Send Us a Message
       </h3>
       <p className="text-sm text-slate-500 mb-6">
-        Fill in the details below to prepare and send your communication to{" "}
-        <span className="font-semibold text-slate-700">{COMPANY_DATA.email}</span>.
+        Fill in the details below and we&apos;ll get back to you at the earliest.
       </p>
 
-      {preparedForEmail ? (
-        <div className="p-6 rounded-xl bg-slate-50 border border-slate-200 space-y-4 animate-in fade-in duration-200">
+      {/* Success State */}
+      {submitStatus === "success" && (
+        <div className="p-6 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-4 animate-in fade-in duration-200">
           <div className="flex items-start gap-3">
-            <div className="size-8 rounded-full bg-[#165dfc]/10 text-[#165dfc] flex items-center justify-center shrink-0 mt-0.5">
+            <div className="size-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <div>
               <h4 className="text-base font-bold text-[#0b1528]">
-                Validation Complete
+                Message Sent Successfully
               </h4>
               <p className="text-sm text-slate-600 mt-1 leading-relaxed">
-                Thank you, <span className="font-semibold text-slate-800">{formData.name}</span>.
-                Your communication has been formatted. You can now dispatch it directly to our inbox via your email client, or contact us at <a href={`mailto:${COMPANY_DATA.email}`} className="text-[#165dfc] font-medium underline">{COMPANY_DATA.email}</a>.
+                Thank you, <span className="font-semibold text-slate-800">{formData.name}</span>.{" "}
+                {apiMessage} We will respond to you at <span className="font-semibold text-slate-800">{formData.email}</span>.
               </p>
             </div>
           </div>
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="px-4 py-2.5 bg-white border border-slate-300 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 transition-colors"
+            >
+              Send Another Message
+            </button>
+          </div>
+        </div>
+      )}
 
+      {/* Error State */}
+      {submitStatus === "error" && (
+        <div className="p-6 rounded-xl bg-red-50/60 border border-red-200 space-y-4 animate-in fade-in duration-200">
+          <div className="flex items-start gap-3">
+            <div className="size-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-[#0b1528]">
+                Unable to Send Message
+              </h4>
+              <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                {apiMessage}
+              </p>
+            </div>
+          </div>
+          <div className="pt-2 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setSubmitStatus("idle")}
+              className="px-5 py-2.5 bg-[#165dfc] hover:bg-[#0f4bd8] text-white text-sm font-semibold rounded-md transition-colors"
+            >
+              Try Again
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenMailClient}
+              className="px-4 py-2.5 bg-white border border-slate-300 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 transition-colors inline-flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Email Us Directly
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Not Configured State — graceful fallback */}
+      {submitStatus === "not_configured" && (
+        <div className="p-6 rounded-xl bg-amber-50/60 border border-amber-200 space-y-4 animate-in fade-in duration-200">
+          <div className="flex items-start gap-3">
+            <div className="size-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-[#0b1528]">
+                Service Temporarily Unavailable
+              </h4>
+              <p className="text-sm text-slate-600 mt-1 leading-relaxed">
+                {apiMessage}
+              </p>
+            </div>
+          </div>
           <div className="pt-2 flex flex-wrap gap-3">
             <button
               type="button"
@@ -133,23 +237,17 @@ export function ContactForm() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                setPreparedForEmail(false);
-                setFormData({
-                  name: "",
-                  email: "",
-                  phone: "",
-                  subject: "General Inquiry",
-                  message: "",
-                });
-              }}
+              onClick={resetForm}
               className="px-4 py-2.5 bg-white border border-slate-300 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 transition-colors"
             >
               Reset Form
             </button>
           </div>
         </div>
-      ) : (
+      )}
+
+      {/* Form — visible only when idle or submitting */}
+      {(submitStatus === "idle" || submitStatus === "submitting") && (
         <form onSubmit={handleSubmit} noValidate className="space-y-4 sm:space-y-5">
           {/* Name Field */}
           <div>
@@ -266,16 +364,16 @@ export function ContactForm() {
           <div className="pt-2">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={submitStatus === "submitting"}
               className="w-full sm:w-auto px-7 py-3 text-sm font-semibold text-white bg-[#165dfc] hover:bg-[#0f4bd8] active:bg-[#0b3eb8] disabled:opacity-60 rounded-md transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer"
             >
-              {isSubmitting ? (
+              {submitStatus === "submitting" ? (
                 <>
                   <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  Processing...
+                  Sending...
                 </>
               ) : (
                 "Send Message"
