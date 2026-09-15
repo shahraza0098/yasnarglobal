@@ -332,6 +332,7 @@ export function ContactForm() {
               className="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm text-[#0b1528] bg-white focus:outline-none focus:border-[#165dfc] focus:ring-2 focus:ring-[#165dfc]/20 transition-all"
             >
               <option value="General Inquiry">General Inquiry</option>
+              <option value="Technology & Digital Services">Technology & Digital Services</option>
               <option value="Gyan Master Application">Gyan Master Application</option>
               <option value="Digital Products">Digital Products</option>
               <option value="Other">Other Communication</option>
