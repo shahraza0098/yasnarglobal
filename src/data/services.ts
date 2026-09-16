@@ -4,6 +4,7 @@ export interface ServiceItem {
   title: string;
   shortDescription: string;
   iconName: "Globe" | "Smartphone" | "Blocks" | "Bot" | "Palette" | "Cloud" | "Code2" | "Plug";
+  image: string;
   capabilities: string[];
   overview: string;
   deliverables: string[];
@@ -29,6 +30,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We build modern, responsive, and scalable websites and web applications tailored to your business needs.",
     iconName: "Globe",
+    image: "/images/services/webdeveloper_1.jpg",
     capabilities: [
       "Corporate websites",
       "Business websites",
@@ -54,6 +56,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We develop intuitive, high-performance mobile applications that deliver seamless experiences across Android and iOS.",
     iconName: "Smartphone",
+    image: "/images/services/appdev.jpg",
     capabilities: [
       "Android app development",
       "iOS app development",
@@ -79,6 +82,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We explore blockchain technology to build transparent, secure, and decentralized digital solutions for modern businesses.",
     iconName: "Blocks",
+    image: "/images/services/blockchain.png",
     capabilities: [
       "Blockchain application development",
       "Smart contract development",
@@ -103,6 +107,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We integrate AI-powered agents and intelligent automation into business workflows to reduce repetitive work and improve operational efficiency.",
     iconName: "Bot",
+    image: "/images/services/aiagent.jpg",
     capabilities: [
       "AI agent development",
       "Custom AI assistants",
@@ -130,6 +135,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We design clean, intuitive, and engaging digital experiences that connect user needs with business goals.",
     iconName: "Palette",
+    image: "/images/services/uiux.jpg",
     capabilities: [
       "Website design",
       "Mobile app design",
@@ -155,6 +161,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We help transform ideas into scalable software products with thoughtful architecture, modern interfaces, and reliable functionality.",
     iconName: "Cloud",
+    image: "/images/services/saas.jpg",
     capabilities: [
       "SaaS MVP development",
       "Subscription-based platforms",
@@ -180,6 +187,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We create software solutions tailored to the unique processes, challenges, and goals of your business.",
     iconName: "Code2",
+    image: "/images/services/customdev.jpg",
     capabilities: [
       "Business management software",
       "Custom dashboards",
@@ -205,6 +213,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     shortDescription:
       "We connect your digital systems, services, and platforms to create efficient and connected business workflows.",
     iconName: "Plug",
+    image: "/images/services/api.jpg",
     capabilities: [
       "REST API development",
       "Third-party API integration",

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Globe,
   Smartphone,
@@ -121,66 +122,86 @@ export function ServicesGrid() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {SERVICES_DATA.map((service) => {
             const IconComponent = iconMap[service.iconName];
+            const MAX_VISIBLE_CAPS = 6;
+            const visibleCaps = service.capabilities.slice(0, MAX_VISIBLE_CAPS);
+            const remainingCount = service.capabilities.length - MAX_VISIBLE_CAPS;
+
             return (
               <div
                 key={service.id}
-                className="bg-white rounded-2xl p-7 sm:p-9 border border-slate-200 shadow-xs hover:border-[#165dfc]/50 hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                className="relative bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-lg hover:border-[#165dfc]/40 transition-all duration-300 flex flex-col group overflow-hidden"
               >
-                <div>
-                  {/* Card Header: Number & Icon */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="size-12 rounded-xl bg-[#165dfc]/10 text-[#165dfc] flex items-center justify-center transition-colors group-hover:bg-[#165dfc] group-hover:text-white">
+                {/* ─── Top: Hero Image ─── */}
+                <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100 overflow-hidden">
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    fill
+                    className="object-contain p-5 sm:p-6 transition-transform duration-500 group-hover:scale-[1.03]"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  {/* Subtle bottom fade for seamless blend into content */}
+                  <div
+                    className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent"
+                    aria-hidden="true"
+                  />
+                </div>
+
+                {/* ─── Body Content ─── */}
+                <div className="flex flex-col flex-1 px-7 sm:px-8 pb-7 sm:pb-8">
+                  {/* Icon + Number Row */}
+                  <div className="flex items-center justify-between mt-5 mb-4">
+                    <div className="size-12 rounded-xl bg-[#165dfc]/10 text-[#165dfc] flex items-center justify-center transition-colors duration-300 group-hover:bg-[#165dfc] group-hover:text-white">
                       <IconComponent className="size-6 transition-transform duration-300 group-hover:scale-110" />
                     </div>
-                    <span className="font-mono text-xs font-bold text-slate-400 tracking-wider">
+                    <span className="font-mono text-sm font-bold text-slate-300 tracking-wider select-none">
                       {service.number}
                     </span>
                   </div>
 
-                  {/* Title & Description */}
-                  <h3 className="text-2xl font-bold text-[#0b1528] tracking-tight mb-3 group-hover:text-[#165dfc] transition-colors">
+                  {/* Title */}
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#0b1528] tracking-tight mb-2.5 group-hover:text-[#165dfc] transition-colors duration-300">
                     {service.title}
                   </h3>
 
-                  <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                  {/* Description */}
+                  <p className="text-slate-600 text-sm sm:text-[15px] leading-relaxed mb-6">
                     {service.shortDescription}
                   </p>
 
-                  {/* Key Capabilities List */}
-                  <div className="pt-2 pb-6 border-t border-slate-100">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-3">
+                  {/* Key Capabilities */}
+                  <div className="pt-5 border-t border-slate-100 flex-1">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#165dfc]/70 block mb-3">
                       Key Capabilities
                     </span>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
-                      {service.capabilities.slice(0, 6).map((cap) => (
-                        <li key={cap} className="flex items-start gap-2">
-                          <Check className="size-3.5 text-[#165dfc] shrink-0 mt-0.5" />
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5 text-[13px] text-slate-700 font-medium">
+                      {visibleCaps.map((cap) => (
+                        <li key={cap} className="flex items-start gap-2.5">
+                          <Check className="size-4 text-[#165dfc] shrink-0 mt-0.5" strokeWidth={2.5} />
                           <span className="leading-snug">{cap}</span>
                         </li>
                       ))}
-                      {service.capabilities.length > 6 && (
-                        <li className="text-[11px] text-slate-400 italic pt-0.5">
-                          + {service.capabilities.length - 6} additional areas
-                        </li>
-                      )}
                     </ul>
+                    {remainingCount > 0 && (
+                      <p className="text-xs text-[#165dfc]/60 italic mt-2.5">
+                        + {remainingCount} additional area{remainingCount > 1 ? "s" : ""}
+                      </p>
+                    )}
                   </div>
-                </div>
 
-                {/* Card Footer: View Details Action */}
-                <div className="pt-5 border-t border-slate-100 flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={(e) => handleOpenModal(service, e.currentTarget)}
-                    className="inline-flex items-center text-sm font-semibold text-[#165dfc] hover:text-[#0f4bd8] transition-colors group/btn cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#165dfc] rounded-sm py-1"
-                    aria-haspopup="dialog"
-                    aria-label={`View details for ${service.title}`}
-                  >
-                    <span>View Details</span>
-                    <ArrowRight className="size-4 ml-1.5 transition-transform duration-200 group-hover/btn:translate-x-1" />
-                  </button>
-
-                  <span className="size-1.5 rounded-full bg-slate-200 group-hover:bg-[#165dfc] transition-colors" />
+                  {/* View Details CTA */}
+                  <div className="pt-6 mt-auto border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={(e) => handleOpenModal(service, e.currentTarget)}
+                      className="inline-flex items-center text-sm font-semibold text-[#165dfc] hover:text-[#0f4bd8] transition-colors group/btn cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#165dfc] rounded-sm py-1"
+                      aria-haspopup="dialog"
+                      aria-label={`View details for ${service.title}`}
+                    >
+                      <span>View Details</span>
+                      <ArrowRight className="size-4 ml-2 transition-transform duration-200 group-hover/btn:translate-x-1" />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -246,6 +267,17 @@ export function ServicesGrid() {
 
             {/* Modal Scrollable Body */}
             <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1 text-slate-700">
+              {/* Modal Service Image */}
+              <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-slate-50 border border-slate-100">
+                <Image
+                  src={selectedService.image}
+                  alt={selectedService.title}
+                  fill
+                  className="object-contain p-4"
+                  sizes="(max-width: 672px) 100vw, 672px"
+                />
+              </div>
+
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                   Service Overview
